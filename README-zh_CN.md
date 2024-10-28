@@ -385,13 +385,6 @@ frame.SetPositionY(TextFrame::Position::Top,  TextFrame::Anchor::Margin); // 相
 frame.SetTextWrapping(TextFrame::Wrapping::Around);
 ```
 
-## TODO
-- [ ] 添加页眉页脚
-- [ ] 添加删除图片
-- [ ] 添加段落字体样式
-- [ ] 添加文档删除操作
-- [ ] 添加多媒体支持操作
-
 ## 反馈
 
 有任何疑问，可随时在 [此处](https://github.com/Mr-Harry/minidocx/issues) 提问。

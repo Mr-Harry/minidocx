@@ -1,13 +1,7 @@
-﻿/**
- * minidocx 0.5.0 - C++ library for creating Microsoft Word Document (.docx).
- * --------------------------------------------------------
- * Copyright (C) 2022-2023, by Harry (zhang664326111@163.com)
- * Report bugs and download new versions at https://github.com/Mr-Harry/minidocx
- */
-
-#include <iostream> // std::ostream
+﻿#include <iostream> // std::ostream
 #include <string>
 #include <vector>
+#include <map>
 
 
 namespace docx
@@ -119,8 +113,8 @@ namespace docx
     int row, col; // position
     int rows, cols; // size
   };
-  using Row = std::vector<Cell>;
-  using Grid = std::vector<Row>;
+  typedef std::vector<Cell> Row;
+  typedef std::vector<Row> Grid;
 
 
   class TableCell
@@ -149,7 +143,7 @@ namespace docx
 
   private:
     struct Impl;
-    Impl* impl_ = nullptr;
+    Impl* impl_;
 
     // constructs a table from existing xml node
     TableCell(Impl* impl);
@@ -216,7 +210,7 @@ namespace docx
 
   private:
     struct Impl;
-    Impl* impl_ = nullptr;
+    Impl* impl_;
 
     // constructs a table from existing xml node
     Table(Impl* impl);
@@ -225,6 +219,7 @@ namespace docx
 
   class Run
   {
+    friend class Document;
     friend class Paragraph;
     friend std::ostream& operator<<(std::ostream& out, const Run& r);
 
@@ -237,15 +232,16 @@ namespace docx
 
     operator bool();
     Run Next();
-    
+
     // text
     void AppendText(const std::string& text);
     std::string GetText();
     void ClearText();
     void AppendLineBreak();
+    void AppendTabs(const unsigned int count = 1);
 
     // text formatting
-    using FontStyle = unsigned int;
+    typedef unsigned int FontStyle;
     enum : FontStyle
     {
       Bold = 1,
@@ -259,6 +255,9 @@ namespace docx
     void SetFont(const std::string& fontAscii, const std::string& fontEastAsia = "");
     void GetFont(std::string& fontAscii, std::string& fontEastAsia);
 
+    void SetFontColor(const std::string& hex);
+    std::string GetFontColor();
+
     void SetFontStyle(const FontStyle fontStyle);
     FontStyle GetFontStyle();
 
@@ -271,7 +270,7 @@ namespace docx
 
   private:
     struct Impl;
-    Impl* impl_ = nullptr;
+    Impl* impl_;
 
     // constructs run from existing xml node
     Run(Impl* impl);
@@ -316,7 +315,7 @@ namespace docx
     void GetPageMargin(int& header, int& footer);
 
     void SetColumn(const int num, const int space = 425);
-    
+
     enum class PageNumberFormat {
       Decimal,      // e.g., 1, 2, 3, 4, etc.
       NumberInDash, // e.g., -1-, -2-, -3-, -4-, etc.
@@ -330,9 +329,9 @@ namespace docx
 
     /**
      * Specifies the page numbers for pages in the section.
-     * 
+     *
      * @param fmt   Specifies the number format to be used for page numbers in the section.
-     * 
+     *
      * @param start Specifies the page number that appears on the first page of the section.
      *              If the value is omitted, numbering continues from the highest page number in the previous section.
      */
@@ -345,7 +344,7 @@ namespace docx
 
   private:
     struct Impl;
-    Impl* impl_ = nullptr;
+    Impl* impl_;
 
     // constructs section from existing xml node
     Section(Impl* impl);
@@ -433,7 +432,7 @@ namespace docx
 
   protected:
     struct Impl;
-    Impl* impl_ = nullptr;
+    Impl* impl_;
 
     // constructs paragraph from existing xml node
     Paragraph(Impl* impl);
@@ -468,11 +467,32 @@ namespace docx
 
   private:
     struct Impl;
-    Impl* impl_ = nullptr;
+    Impl* impl_;
 
     // constructs text frame from existing xml node
     TextFrame(Impl* impl, Paragraph::Impl* p_impl);
   }; // class TextFrame
+
+
+  class Bookmark
+  {
+    friend class Document;
+
+  public:
+    Bookmark();
+    Bookmark(const Bookmark& rhs);
+    ~Bookmark();
+    bool operator==(const Bookmark& rhs);
+
+    inline unsigned int GetId() const;
+    inline std::string GetName() const;
+
+  private:
+    struct Impl;
+    Impl* impl_;
+
+    Bookmark(Impl* impl);
+  };
 
 
   class Document
@@ -481,11 +501,11 @@ namespace docx
 
   public:
     // constructs an empty document
-    Document(const std::string& path);
+    Document();
     ~Document();
 
     // save document to file
-    bool Save();
+    bool Save(const std::string& path);
     bool Open(const std::string& path);
 
     // get paragraph
@@ -522,9 +542,22 @@ namespace docx
     // add text frame
     TextFrame AppendTextFrame(const int w, const int h);
 
+    // document settings
+    void SetReadOnly(const bool enabled = true);
+
+    std::map<std::string, std::string> GetVars();
+    void SetVars(const std::map<std::string, std::string>& vars);
+    void AddVars(const std::map<std::string, std::string>& vars);
+
+    // bookmarks
+    void FindBookmarks();
+    std::vector<Bookmark> GetBookmarks();
+    Bookmark AddBookmark(const std::string& name, const Run& start, const Run& end);
+    void RemoveBookmark(Bookmark& b);
+
   private:
     struct Impl;
-    Impl* impl_ = nullptr;
+    Impl* impl_;
   }; // class Document
 
 

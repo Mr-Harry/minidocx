@@ -378,12 +378,6 @@ frame.SetPositionY(TextFrame::Position::Top,  TextFrame::Anchor::Margin);
 
 frame.SetTextWrapping(TextFrame::Wrapping::Around);
 ``` 
-## TODO
-- [ ] Add header and footer
-- [ ] Add or delete images
-- [ ] Add paragraph font style
-- [ ] Add document deletion operation
-- [ ] Add multimedia support operation
 
 ## Contact
 

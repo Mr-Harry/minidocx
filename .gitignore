@@ -3,3 +3,5 @@
 /install
 *.docx
 cmake*
+cmake-build-debug/*
+CMakeLists.txt

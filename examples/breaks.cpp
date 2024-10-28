@@ -4,19 +4,19 @@
 
 int main()
 {
-  docx::Document doc("./breaks.docx");
+  docx::Document doc;
 
   auto p = doc.AppendParagraph();
   p.SetAlignment(docx::Paragraph::Alignment::Left);
 
   auto r = p.AppendRun();
-  r.AppendText("This is");
+  r.AppendText("Sample text here...");
   r.AppendLineBreak();
-  r.AppendText("a simple sentence.");
+  r.AppendText("And another line of sample text here...");
   p.AppendPageBreak();
 
-  doc.AppendParagraph("see you next page.");
+  doc.AppendParagraph("Page 2");
 
-  doc.Save();
+  doc.Save("breaks.docx");
   return 0;
 }
